@@ -1,13 +1,13 @@
-package fit.wenchao.websocketchartroom;
+package fit.wenchao.websocketchartroom.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import fit.wenchao.websocketchartroom.BackendException;
+import fit.wenchao.websocketchartroom.JsonResult;
 import fit.wenchao.websocketchartroom.dao.po.UserPO;
 import fit.wenchao.websocketchartroom.dao.repo.UserDao;
 import fit.wenchao.websocketchartroom.entity.UserVo;
 import fit.wenchao.websocketchartroom.utils.ResultCodeEnum;
-import fit.wenchao.websocketchartroom.ws.ChatEndPoint;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -15,8 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.UUID;
 
-import static fit.wenchao.utils.collection.MapService.of;
-import static fit.wenchao.websocketchartroom.UserController.WrapperUtils.eq;
+import static fit.wenchao.websocketchartroom.controller.UserController.WrapperUtils.eq;
 import static fit.wenchao.websocketchartroom.utils.JsonUtils.ofJson;
 import static fit.wenchao.websocketchartroom.utils.ResultCodeEnum.USER_LOGGED;
 import static fit.wenchao.websocketchartroom.utils.WsServerUtils.returnMsg;
