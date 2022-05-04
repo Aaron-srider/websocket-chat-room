@@ -12,19 +12,20 @@ import org.springframework.stereotype.Component;
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 import static fit.wenchao.utils.basic.BasicUtils.loop;
-import static fit.wenchao.websocketchartroom.UserController.WrapperUtils.eq;
+import static fit.wenchao.websocketchartroom.controller.UserController.WrapperUtils.eq;
 import static fit.wenchao.websocketchartroom.utils.HttpUtils.parseQueryString;
 import static fit.wenchao.websocketchartroom.utils.JsonUtils.ofJson;
 import static fit.wenchao.websocketchartroom.utils.ResultCodeEnum.SYS_USER_LEAVE_ROOM;
 import static fit.wenchao.websocketchartroom.utils.WsServerUtils.returnMsg;
 import static fit.wenchao.websocketchartroom.utils.WsServerUtils.returnMsgAndCloseSession;
-import static java.util.Arrays.asList;
 
 @ServerEndpoint("/chat")
 @Component
@@ -100,12 +101,8 @@ public class ChatEndPoint {
 
     }
 
-    private void returnOnlineUserList(Session session, Map<String, ChatEndPoint> onlineUsers, String username) throws Exception {
-        List<String> onlineUsernames = new ArrayList<>();
-        loop(onlineUsers, (entry, key, value) -> {
-            onlineUsernames.add(key);
-        });
-        returnMsg(session, onlineUsernames, ResultCodeEnum.RETURN_ONLINE_USERLIST, "info");
+    private static <K, V> boolean ifValueEquals(Map.Entry<K, V> entry, K except) {
+        return !entry.getKey().equals(except);
     }
 
     private void broadCast(Map<Integer, ChatEndPoint> onlineUsers, Object payload, ResultCodeEnum code,
@@ -145,9 +142,7 @@ public class ChatEndPoint {
     }
 
     private void broadCastAllOnlineUsers() throws Exception {
-        List<Integer> userPOContainId = onlineUsers.keySet().stream()
-                .collect(Collectors.toList());
-
+        List<Integer> userPOContainId = new ArrayList<>(onlineUsers.keySet());
 
         if (userPOContainId.size() != 0) {
             List<UserPO> userPOListContainIdAndUsername = userDao.listByIds(userPOContainId);
@@ -158,6 +153,7 @@ public class ChatEndPoint {
                             .id(userpo2trans.getId())
                             .username(userpo2trans.getUsername()).build())
                     .collect(Collectors.toList());
+
             //广播所有用户列表
             broadCast(onlineUsers,
                     ofJson(
